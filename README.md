@@ -1,12 +1,12 @@
 [English](README.md) | [Русский](README_RU.md) | [Nederlands](README_NL.md)
 
-# Pterodactyl Location 3.0.1
+# Pterodactyl Location 3.0.2
 
 Server location statistics for Pterodactyl Panel. Based on Pterodactyl Region by the original authors credited in [LICENSE](LICENSE).
 
 ## Compatibility
 
-Integration target: Pterodactyl Panel **1.15.2**, Blueprint **beta-2026-08**, PHP **8.2+**, Node.js **22+** and Yarn Classic. Existing React, TypeScript, Font Awesome and Laravel dependencies come from the panel; this addon does not replace them with incompatible major versions.
+Integration target: Pterodactyl Panel **1.15.1**, Blueprint **beta-2026-08**, PHP **8.2+**, Node.js **22+** and Yarn Classic. The client console hook and server-access middleware are compatible with Panel 1.15.1. Existing React, TypeScript, Font Awesome and Laravel dependencies come from the panel; this addon does not replace them with incompatible major versions.
 
 PHP cURL with HTTP/2 support and mbstring are required. The panel must have outbound HTTPS access. This is a panel addon, not a standalone application.
 
@@ -27,7 +27,7 @@ PHP cURL with HTTP/2 support and mbstring are required. The panel must have outb
 
 ## Installation
 
-The installer packages this addon as a Blueprint extension, registers its API and dashboard component through Blueprint, and lets Blueprint rebuild the frontend. Download and review the script before running it; replace the panel path if needed:
+The installer packages this addon as a Blueprint extension, registers its API and dashboard component through Blueprint, and rebuilds the frontend. If the extension is already installed, it backs up and removes the old Blueprint files before installing the new package; panel DNS settings are preserved. Download and review the script before running it; replace the panel path if needed:
 
 ```bash
 curl -fsSLo /tmp/pterodactyl-location-main.sh https://raw.githubusercontent.com/ver3k12/pterodactyl-location/main/main.sh

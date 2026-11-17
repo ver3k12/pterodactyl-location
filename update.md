@@ -1,10 +1,10 @@
 # Updating Pterodactyl Location
 
-This procedure updates an existing Blueprint installation. The current package version is 3.0.1. Keep the same extension identifier (`pterodactyllocation`) and do not remove the extension first; Blueprint will recognize it as an update and preserve the DNS settings stored by the panel.
+This procedure updates an existing Blueprint installation. The current package version is 3.0.2. The installer keeps the extension identifier (`pterodactyllocation`), backs up and removes the old Blueprint-managed files, then installs the latest package. DNS settings are stored by the panel and are preserved.
 
 ## 1. Back Up the Panel
 
-Back up the panel files and database using your normal backup process. The installer also saves an existing `.blueprint` package, if present, under `storage/app/pterodactyl-location-backups/`.
+Back up the panel files and database using your normal backup process. The installer saves the old `.blueprint` package and installed extension state, if present, under `storage/app/pterodactyl-location-backups/` before replacing it.
 
 ## 2. Run the Updated Installer
 
@@ -16,7 +16,7 @@ less /tmp/pterodactyl-location-main.sh
 sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
 ```
 
-Replace `/var/www/pterodactyl` with the panel's absolute path. The updated package is installed with the existing identifier. Blueprint updates the extension files in place, refreshes the API route and dashboard component, rebuilds the frontend, and clears its application caches. It should not create a second extension entry. The admin settings view now uses Blueprint's extension section instead of nesting a second full panel layout.
+Replace `/var/www/pterodactyl` with the panel's absolute path. The installer backs up and removes the old Blueprint extension, then installs the latest package with the same identifier. Blueprint rebuilds the frontend and clears its application caches. The DNS resolver is stored in the panel's settings table and is not removed with the Blueprint extension. This clean reinstall should leave one extension entry. Version 3.0.2 also fixes the admin settings view, which now uses Blueprint's extension content instead of a nested panel layout.
 
 Do not run `blueprint -remove pterodactyllocation` before updating. Removing it first is unnecessary and may discard extension-managed files.
 

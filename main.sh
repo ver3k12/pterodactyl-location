@@ -100,8 +100,8 @@ if [[ ! -s "$PACKAGE_FILE" ]]; then
     exit 1
 fi
 
+BACKUP_DIR="$PANEL_DIR/storage/app/pterodactyl-location-backups/$(date +%Y%m%d-%H%M%S)"
 if [[ -e "$PANEL_DIR/$EXTENSION_ID.blueprint" ]]; then
-    BACKUP_DIR="$PANEL_DIR/storage/app/pterodactyl-location-backups/$(date +%Y%m%d-%H%M%S)"
     mkdir -p "$BACKUP_DIR"
     cp -a "$PANEL_DIR/$EXTENSION_ID.blueprint" "$BACKUP_DIR/"
     printf 'Previous extension package backed up to: %s\n' "$BACKUP_DIR/$EXTENSION_ID.blueprint"
@@ -109,6 +109,23 @@ fi
 
 PACKAGE_IN_PANEL="$PANEL_DIR/$EXTENSION_ID.blueprint"
 cp "$PACKAGE_FILE" "$PACKAGE_IN_PANEL"
+
+INSTALLED_FILE="$PANEL_DIR/.blueprint/extensions/blueprint/private/db/installed_extensions"
+if [[ -f "$INSTALLED_FILE" ]] && grep -Fq "|$EXTENSION_ID," "$INSTALLED_FILE"; then
+    EXTENSION_STATE="$PANEL_DIR/.blueprint/extensions/$EXTENSION_ID"
+    if [[ -d "$EXTENSION_STATE" ]]; then
+        mkdir -p "$BACKUP_DIR"
+        cp -a "$EXTENSION_STATE" "$BACKUP_DIR/blueprint-extension"
+        printf 'Previous installed extension backed up to: %s\n' "$BACKUP_DIR/blueprint-extension"
+    fi
+
+    printf 'Removing the previous Blueprint extension before a clean install...\n'
+    (
+        cd "$PANEL_DIR"
+        USER_CONFIRMED_REMOVAL=yes "$BLUEPRINT_COMMAND" -remove "$EXTENSION_ID"
+    )
+fi
+
 printf 'Installing Blueprint extension and rebuilding the panel frontend...\n'
 (
     cd "$PANEL_DIR"

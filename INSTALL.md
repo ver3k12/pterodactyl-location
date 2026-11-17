@@ -1,6 +1,6 @@
 # Installation and Upgrade
 
-Target: Pterodactyl Panel 1.15.2. Review [LICENSE](LICENSE) and obtain the necessary permission before using modified code. Back up the panel files and database before proceeding. Use your normal deployment account; do not run an unreviewed remote script as root.
+Target: Pterodactyl Panel 1.15.1 with Blueprint beta-2026-08. Review [LICENSE](LICENSE) and obtain the necessary permission before using modified code. Back up the panel files and database before proceeding. Use your normal deployment account; do not run an unreviewed remote script as root.
 
 ## 1. Requirements
 
@@ -15,7 +15,7 @@ The free API V2 quota is currently 1000 requests per day. No token is required f
 
 ## 2. Automated Blueprint Installation
 
-The script creates a temporary `.blueprint` package and installs it using the panel's Blueprint CLI. Blueprint registers the admin page, authenticated client API route and dashboard component, then rebuilds the frontend. Review [main.sh](main.sh) before running it. From a trusted shell on the panel server, run:
+The script creates a temporary `.blueprint` package and installs it using the panel's Blueprint CLI. If this extension is already installed, the script backs up its Blueprint state, removes that version, and installs the new package using the same identifier. Blueprint registers the admin page, authenticated client API route and dashboard component, then rebuilds the frontend. The DNS resolver is stored in the panel settings and is preserved. Review [main.sh](main.sh) before running it. From a trusted shell on the panel server, run:
 
 ```bash
 curl -fsSLo /tmp/pterodactyl-location-main.sh https://raw.githubusercontent.com/ver3k12/pterodactyl-location/main/main.sh
@@ -27,7 +27,7 @@ Replace `/var/www/pterodactyl` with the panel's absolute path. Blueprint must be
 
 The extension adds a separate Region statistic through Blueprint and does not replace the panel's `ServerDetailsBlock.tsx`. It does not copy the addon's test manifest, lock file or vendor directory into the panel. Blueprint handles extension installation and frontend rebuilding.
 
-For updates to an existing installation, follow [update.md](update.md). Do not remove the Blueprint extension before updating.
+For updates to an existing installation, follow [update.md](update.md). Do not manually remove the extension; the installer handles replacement and backup.
 
 ## 3. Verify
 

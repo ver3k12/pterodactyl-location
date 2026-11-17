@@ -1,4 +1,3 @@
-@section('extension.config')
     <div class="row">
         <div class="col-xs-12">
             <form action="{{ route('admin.extensions.pterodactyllocation.index') }}" method="POST">
@@ -33,4 +32,3 @@
             </form>
         </div>
     </div>
-@endsection
