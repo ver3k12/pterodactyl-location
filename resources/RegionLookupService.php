@@ -106,13 +106,19 @@ class RegionLookupService
         }
     }
 
-    public static function selectLookupAddress(string $address, ?string $alias): string
+    public static function selectLookupAddress(string $address, ?string $nodeHostname): array
     {
-        if (self::isLocalAddress($address) && is_string($alias) && trim($alias) !== '') {
-            return trim($alias);
+        if (self::isLocalAddress($address)) {
+            $nodeHostname = is_string($nodeHostname) ? trim($nodeHostname) : '';
+
+            return [
+                'address' => $nodeHostname !== '' ? $nodeHostname : $address,
+                'local_ip' => true,
+                'source' => $nodeHostname !== '' ? 'sftp_node' : 'allocation',
+            ];
         }
 
-        return $address;
+        return ['address' => $address, 'local_ip' => false, 'source' => 'allocation'];
     }
 
     private static function result(string $status, string $label): array

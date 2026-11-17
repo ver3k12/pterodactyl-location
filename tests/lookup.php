@@ -37,16 +37,22 @@ foreach (['0.0.0.0', '127.0.0.1', '192.168.1.1', '::', '::1', '[::1]', '::ffff:1
 }
 $check($history === [], 'Local addresses must never cause network requests.');
 $check(
-    RegionLookupService::selectLookupAddress('10.0.0.5', '145.79.141.196') === '145.79.141.196',
-    'A public allocation alias should be used when the primary IP is private.'
+    RegionLookupService::selectLookupAddress('10.0.0.5', 'node.example.com') === [
+        'address' => 'node.example.com', 'local_ip' => true, 'source' => 'sftp_node',
+    ],
+    'The node SFTP hostname should be used when the primary IP is private.'
 );
 $check(
-    RegionLookupService::selectLookupAddress('1.1.1.1', '145.79.141.196') === '1.1.1.1',
-    'A public primary IP should take precedence over its display alias.'
+    RegionLookupService::selectLookupAddress('1.1.1.1', 'node.example.com') === [
+        'address' => '1.1.1.1', 'local_ip' => false, 'source' => 'allocation',
+    ],
+    'A public primary IP should take precedence over the node SFTP hostname.'
 );
 $check(
-    RegionLookupService::selectLookupAddress('10.0.0.5', null) === '10.0.0.5',
-    'A private allocation without an alias should remain unchanged.'
+    RegionLookupService::selectLookupAddress('10.0.0.5', null) === [
+        'address' => '10.0.0.5', 'local_ip' => true, 'source' => 'allocation',
+    ],
+    'A private allocation without a node hostname should remain unchanged.'
 );
 foreach (['', 'not an address', 'https://example.com', '1.1.1.1/path', '999.999.999.999:80'] as $invalid) {
     $check($service->lookup($invalid)['status'] === 'invalid', 'Invalid input: ' . $invalid);

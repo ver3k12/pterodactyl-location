@@ -10,7 +10,7 @@ interface LocationData {
     country_name: string;
     country_code: string;
     local_ip?: boolean;
-    location_source?: 'allocation' | 'alias' | 'sftp_node';
+    location_source?: 'allocation' | 'sftp_node';
 }
 
 export default () => {
@@ -64,9 +64,7 @@ export default () => {
                 <p className={'mt-1 px-2 text-xs leading-tight text-gray-300'}>
                     {location.location_source === 'sftp_node'
                         ? 'Private allocation; approximate region from the node SFTP hostname.'
-                        : location.location_source === 'alias'
-                          ? 'Private allocation; region from its public alias.'
-                          : 'Private allocation; no public alias or SFTP location was available.'}
+                        : 'Private allocation; no public SFTP location was available.'}
                 </p>
             )}
         </div>

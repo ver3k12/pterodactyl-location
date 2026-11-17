@@ -46,7 +46,7 @@ The installer handles extension registration and the frontend rebuild. The defau
 - Switching between servers while a lookup is pending: no stale region from the previous server.
 - An unauthenticated user or a user without access to the server cannot access its region endpoint.
 
-DNS is used for hostname allocations and for a configured alias or SFTP node hostname when the primary allocation is private/local. A public primary IP takes precedence over its alias. The panel hostname and browser address are never used. The statistic labels whether a private allocation's region came from its public alias or SFTP node.
+DNS is used for hostname allocations. Public primary IPs are geolocated directly. Private/local primary allocations always use the node's SFTP hostname for an approximate region, even if a server-specific display alias is configured. The panel hostname and browser address are never used, and the statistic labels this as an SFTP node location.
 
 ## Troubleshooting
 
@@ -55,5 +55,5 @@ DNS is used for hostname allocations and for a configured alias or SFTP node hos
 - **Quad9 unavailable:** verify PHP cURL supports HTTP/2 and outbound HTTPS to `dns.quad9.net`. All DoH requests explicitly use HTTP/2.
 - **No country flag:** the Blueprint component uses a globe icon and does not install assets into the panel's shared asset directory.
 - **An error persists briefly:** failed lookups are cached for 60 seconds. Successful IP lookups are cached for 24 hours; hostname results for 5 minutes.
-- **A private node shows LocalHost:** expected if neither its configured alias nor SFTP node hostname resolves to a public address.
+- **A private node shows LocalHost:** expected if the node's SFTP hostname does not resolve to a public address.
 - **Settings from an older installation:** Google and Cloudflare names remain supported. Unsupported resolver values safely use Cloudflare. Save settings to migrate the old IP provider value to API V2.
