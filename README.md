@@ -1,6 +1,6 @@
 [English](README.md) | [Русский](README_RU.md) | [Nederlands](README_NL.md)
 
-# Pterodactyl Location 3.0.0
+# Pterodactyl Location 3.0.1
 
 Server location statistics for Pterodactyl Panel. Based on Pterodactyl Region by the original authors credited in [LICENSE](LICENSE).
 

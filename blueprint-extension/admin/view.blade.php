@@ -1,19 +1,4 @@
-@extends('layouts.admin')
-
-@section('title')
-    Pterodactyl Location Settings
-@endsection
-
-@section('content-header')
-    <h1>Pterodactyl Location<small>Configure the DNS resolver used for hostname allocations.</small></h1>
-    <ol class="breadcrumb">
-        <li><a href="{{ route('admin.index') }}">Admin</a></li>
-        <li><a href="{{ route('admin.extensions') }}">Extensions</a></li>
-        <li class="active">Pterodactyl Location</li>
-    </ol>
-@endsection
-
-@section('content')
+@section('extension.config')
     <div class="row">
         <div class="col-xs-12">
             <form action="{{ route('admin.extensions.pterodactyllocation.index') }}" method="POST">

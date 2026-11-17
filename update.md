@@ -1,6 +1,6 @@
 # Updating Pterodactyl Location
 
-This procedure updates an existing Blueprint installation. Keep the same extension identifier (`pterodactyllocation`) and do not remove the extension first; Blueprint will recognize it as an update and preserve the DNS settings stored by the panel.
+This procedure updates an existing Blueprint installation. The current package version is 3.0.1. Keep the same extension identifier (`pterodactyllocation`) and do not remove the extension first; Blueprint will recognize it as an update and preserve the DNS settings stored by the panel.
 
 ## 1. Back Up the Panel
 
@@ -16,7 +16,7 @@ less /tmp/pterodactyl-location-main.sh
 sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
 ```
 
-Replace `/var/www/pterodactyl` with the panel's absolute path. The updated package is installed with the existing identifier. Blueprint updates the extension files, refreshes the API route and dashboard component, rebuilds the frontend, and clears its application caches.
+Replace `/var/www/pterodactyl` with the panel's absolute path. The updated package is installed with the existing identifier. Blueprint updates the extension files in place, refreshes the API route and dashboard component, rebuilds the frontend, and clears its application caches. It should not create a second extension entry. The admin settings view now uses Blueprint's extension section instead of nesting a second full panel layout.
 
 Do not run `blueprint -remove pterodactyllocation` before updating. Removing it first is unnecessary and may discard extension-managed files.
 
