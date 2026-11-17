@@ -1,0 +1,27 @@
+{
+    "name": "ver3k12/pterodactyl-location",
+    "description": "Pterodactyl location addon; dependencies below are for standalone tests only.",
+    "license": "proprietary",
+    "type": "project",
+    "require": {
+        "php": "^8.2",
+        "ext-curl": "*",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^7.10",
+        "illuminate/cache": "^12.0 || ^13.0"
+    },
+    "scripts": {
+        "test": [
+            "@php tests/region.php",
+            "@php tests/lookup.php"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "8.2.0"
+        },
+        "sort-packages": true
+    }
+}

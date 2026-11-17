@@ -17,28 +17,9 @@ import RegionStatBlock from '@/components/server/console/RegionStatBlock';
 import useWebsocketEvent from '@/plugins/useWebsocketEvent';
 import classNames from 'classnames';
 import { capitalize } from '@/lib/strings';
-import axios from 'axios';
-import { useStoreState } from 'easy-peasy';
-import ipwho_is from './api-ip/ipwho.is';
-import geoiplookup_io from './api-ip/geoiplookup.io';
-import ipapi_is from './api-ip/ipapi.is';
-import ipapi_co from './api-ip/ipapi.co';
-import DNSGoogle from './api-dns/DNSGoogle';
-import DNSCloudflare from './api-dns/DNSCloudflare';
+import http from '@/api/http';
 
 type Stats = Record<'memory' | 'cpu' | 'disk' | 'uptime' | 'rx' | 'tx', number>;
-
-const IPAPIConnects: {[key: string]: any} = {
-    'ipwho.is': ipwho_is,
-    'geoiplookup.io': geoiplookup_io,
-    'ipapi.is': ipapi_is,
-    'ipapi.co': ipapi_co
-};
-
-const DNSAPIConnects: {[key: string]: any} = {
-    'DNS-Google': DNSGoogle,
-    'DNS-Cloudflare': DNSCloudflare
-};
 
 const getBackgroundColor = (value: number, max: number | null): string | undefined => {
     const delta = !max ? 0 : value / max;
@@ -60,41 +41,11 @@ const Limit = ({ limit, children }: { limit: string | null; children: React.Reac
     </>
 );
 
-const RegionNameLimit = ({ limit, children }: { limit: string | null; children: React.ReactNode }) => (
-    <>
-        {children}
-        <span className={'ml-1 text-gray-300 text-[70%] select-none'}>, {limit || <>&infin;</>}</span>
-    </>
-);
-
 interface IPData {
-    city: string;
+    status: 'success' | 'local' | 'invalid' | 'rate_limited' | 'unavailable';
+    city: string | null;
     country_name: string;
     country_code: string;
-}
-
-function isLocalIPAddress(ipAddress: string) {
-    if (!ipAddress) {
-        return false;
-    }
-
-    const localIPPatterns = [
-        /^127\./,
-        /^10\./,
-        /^192\.168\./,
-        /^172\.(1[6-9]|2\d|3[0-1])\./,
-        /^::1$/,
-        /^fe80:/,
-        /^0\./
-    ];
-
-    for (const pattern of localIPPatterns) {
-        if (pattern.test(ipAddress)) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 const ServerDetailsBlock = ({ className }: { className?: string }) => {
@@ -106,9 +57,8 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
     const instance = ServerContext.useStoreState((state) => state.socket.instance);
     const limits = ServerContext.useStoreState((state) => state.server.data!.limits);
 
-    const dns_api = useStoreState((state) => state.settings.data!.region_api!.dns);
-    const ip_api = useStoreState((state) => state.settings.data!.region_api!.ip);
-    
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+
     const textLimits = useMemo(
         () => ({
             cpu: limits?.cpu ? `${limits.cpu}%` : null,
@@ -135,76 +85,30 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
     });
 
     useEffect(() => {
-        if (serverIp && ip_api && dns_api) {
-            const fetchIpInfo = async (ip: string): Promise<void> => {
-                try {
-                    var ip_matcher = /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/;
-                    let url_request = IPAPIConnects[ip_api].getAPIconnect();
-                    if (isLocalIPAddress(ip)) {
-                        const my_hostname = window.location.hostname;
-                        if (!isLocalIPAddress(my_hostname)) {
-                            if (ip_matcher.test(my_hostname)) {
-                                url_request += IPAPIConnects[ip_api].addHostname(my_hostname);
-                            } else {
-                                const ip_response_from_dns = await DNSAPIConnects[dns_api].getIP(my_hostname);
-                                if (ip_response_from_dns) {
-                                    url_request += IPAPIConnects[ip_api].addHostname(ip_response_from_dns);
-                                } else {
-                                    setIpInfo({
-                                        city: "Unknown",
-                                        country_name: "DNS Error",
-                                        country_code: "N/A",
-                                    });
-                                }
-                            }
-                        }
-                    } else {
-                        if (ip_matcher.test(ip)) {
-                            url_request += IPAPIConnects[ip_api].addHostname(ip);
-                        } else {
-                            const ip_response_from_dns = await DNSAPIConnects[dns_api].getIP(ip);
-                            if (ip_response_from_dns) {
-                                url_request += IPAPIConnects[ip_api].addHostname(ip_response_from_dns);
-                            } else {
-                                setIpInfo({
-                                    city: "Unknown",
-                                    country_name: "DNS Error",
-                                    country_code: "N/A",
-                                });
-                            }
-                        }
-                    }
-                    console.log(url_request);
-                    const response = await axios.get(url_request);
-                    const parseData = IPAPIConnects[ip_api].fetchInfo(response.data);
-                    if (parseData) {
-                        setIpInfo({
-                            city: parseData.city,
-                            country_name: parseData.country_name,
-                            country_code: parseData.country_code,
-                        });
-                    } else {
-                        setIpInfo({
-                            city: "Unknown",
-                            country_name: "IP API Error",
-                            country_code: "N/A",
-                        });
-                    }
-                } catch (error) {
-                    console.error(error);
-                    setIpInfo({
-                        city: "Unknown",
-                        country_name: "Parse Error",
-                        country_code: "N/A",
-                    });
-                }
-            };
-
-            fetchIpInfo(serverIp);
-        } else {
-            setIpInfo(null);
+        let active = true;
+        setIpInfo(null);
+        if (!serverIp) {
+            return;
         }
-    }, [serverIp]);
+
+        http.get<IPData>(`/api/client/servers/${uuid}/region`, { timeout: 15000 })
+            .then(({ data }) => {
+                if (active) setIpInfo(data);
+            })
+            .catch(() => {
+                if (active)
+                    setIpInfo({
+                        status: 'unavailable',
+                        city: null,
+                        country_name: 'Location unavailable',
+                        country_code: '',
+                    });
+            });
+
+        return () => {
+            active = false;
+        };
+    }, [uuid, serverIp]);
 
     useEffect(() => {
         if (!connected || !instance) {
@@ -235,7 +139,9 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
     return (
         <div className={classNames('grid grid-cols-6 gap-2 md:gap-4', className)}>
             <StatBlock icon={faWifi} title={'Address'}>
-                <a href={address} target='_blank'>{allocation}</a>
+                <a href={address} target={'_blank'} rel={'noopener noreferrer'}>
+                    {allocation}
+                </a>
             </StatBlock>
             <StatBlock
                 icon={faClock}
@@ -277,11 +183,10 @@ const ServerDetailsBlock = ({ className }: { className?: string }) => {
             <StatBlock icon={faCloudUploadAlt} title={'Network (Outbound)'}>
                 {status === 'offline' ? <span className={'text-gray-400'}>Offline</span> : bytesToString(stats.tx)}
             </StatBlock>
-            {ipInfo && (
-                <RegionStatBlock icon_name={ipInfo.country_code} title={'Region'}>
-                    <RegionNameLimit limit={ipInfo.city}>{ipInfo.country_name}</RegionNameLimit>
-                </RegionStatBlock>
-            )}
+            <RegionStatBlock icon_name={ipInfo?.country_code || ''} local={ipInfo?.status === 'local'} title={'Region'}>
+                {ipInfo ? ipInfo.country_name : serverIp ? 'Loading...' : 'No allocation'}
+                {ipInfo?.city && <span className={'ml-1 text-gray-300 text-[70%] select-none'}>, {ipInfo.city}</span>}
+            </RegionStatBlock>
         </div>
     );
 };

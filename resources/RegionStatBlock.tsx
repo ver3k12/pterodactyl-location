@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import styles from './style.module.css';
 import useFitText from 'use-fit-text';
 import CopyOnClick from '@/components/elements/CopyOnClick';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGlobe, faServer } from '@fortawesome/free-solid-svg-icons';
 import AE from '@/assets/regions/AE.svg';
 import AR from '@/assets/regions/AR.svg';
 import AT from '@/assets/regions/AT.svg';
@@ -99,30 +101,103 @@ interface StatBlockProps {
     copyOnClick?: string;
     color?: string | undefined;
     icon_name: string;
+    local?: boolean;
     children: React.ReactNode;
 }
-const countryCodeToSvg: {[key: string]: any} = {
-    AE: AE, AR: AR, AT: AT, AU: AU, BE: BE,
-    BG: BG, BR: BR, CA: CA, CH: CH, CL: CL,
-    CN: CN, CO: CO, CZ: CZ, DE: DE, DK: DK,
-    EG: EG, ES: ES, FI: FI, FR: FR, GB: GB,
-    HK: HK, IE: IE, IL: IL, IN: IN, IT: IT,
-    JP: JP, KE: KE, KR: KR, MA: MA, MY: MY,
-    NG: NG, NL: NL, NO: NO, NZ: NZ, PH: PH,
-    PL: PL, PT: PT, QA: QA, RO: RO, RU: RU,
-    SA: SA, SE: SE, SG: SG, TH: TH, TW: TW,
-    UA: UA, US: US, VN: VN, ZA: ZA, TR: TR,
-    RS: RS, LV: LV, LT: LT, KZ: KZ, IS: IS,
-    ID: ID, EE: EE, BY: BY, GR: GR, HR: HR,
-    HU: HU, KG: KG, MD: MD, MN: MN, MX: MX,
-    SI: SI, SK: SK, TJ: TJ, UZ: UZ, LU: LU,
-    BA: BA, ME: ME, AL: AL, MK: MK, CR: CR,
-    PA: PA, TM: TM, GE: GE, AM: AM, AZ: AZ,
-    CY: CY, PE: PE, EC: EC, GY: GY, VE: VE, 
-    XK: XK, SR: SR, BO: BO, PY: PY, UY: UY
+const countryCodeToSvg: { [key: string]: any } = {
+    AE: AE,
+    AR: AR,
+    AT: AT,
+    AU: AU,
+    BE: BE,
+    BG: BG,
+    BR: BR,
+    CA: CA,
+    CH: CH,
+    CL: CL,
+    CN: CN,
+    CO: CO,
+    CZ: CZ,
+    DE: DE,
+    DK: DK,
+    EG: EG,
+    ES: ES,
+    FI: FI,
+    FR: FR,
+    GB: GB,
+    HK: HK,
+    IE: IE,
+    IL: IL,
+    IN: IN,
+    IT: IT,
+    JP: JP,
+    KE: KE,
+    KR: KR,
+    MA: MA,
+    MY: MY,
+    NG: NG,
+    NL: NL,
+    NO: NO,
+    NZ: NZ,
+    PH: PH,
+    PL: PL,
+    PT: PT,
+    QA: QA,
+    RO: RO,
+    RU: RU,
+    SA: SA,
+    SE: SE,
+    SG: SG,
+    TH: TH,
+    TW: TW,
+    UA: UA,
+    US: US,
+    VN: VN,
+    ZA: ZA,
+    TR: TR,
+    RS: RS,
+    LV: LV,
+    LT: LT,
+    KZ: KZ,
+    IS: IS,
+    ID: ID,
+    EE: EE,
+    BY: BY,
+    GR: GR,
+    HR: HR,
+    HU: HU,
+    KG: KG,
+    MD: MD,
+    MN: MN,
+    MX: MX,
+    SI: SI,
+    SK: SK,
+    TJ: TJ,
+    UZ: UZ,
+    LU: LU,
+    BA: BA,
+    ME: ME,
+    AL: AL,
+    MK: MK,
+    CR: CR,
+    PA: PA,
+    TM: TM,
+    GE: GE,
+    AM: AM,
+    AZ: AZ,
+    CY: CY,
+    PE: PE,
+    EC: EC,
+    GY: GY,
+    VE: VE,
+    XK: XK,
+    SR: SR,
+    BO: BO,
+    PY: PY,
+    UY: UY,
 };
 
-export default ({ title, copyOnClick, icon_name, color, children }: StatBlockProps) => {
+export default ({ title, copyOnClick, icon_name, local = false, color, children }: StatBlockProps) => {
     const { fontSize, ref } = useFitText({ minFontSize: 8, maxFontSize: 500 });
 
     return (
@@ -131,9 +206,13 @@ export default ({ title, copyOnClick, icon_name, color, children }: StatBlockPro
                 <div className={classNames(styles.status_bar, color || 'bg-gray-700')} />
                 <div className={classNames(styles.icon, color || 'bg-gray-700')}>
                     {countryCodeToSvg[icon_name] ? (
-                        <img style={{ height: '2rem', width: '2rem', userSelect: 'none', WebkitUserSelect: 'none' }} src={countryCodeToSvg[icon_name]}/>
+                        <img
+                            alt={icon_name}
+                            style={{ height: '2rem', width: '2rem', userSelect: 'none', WebkitUserSelect: 'none' }}
+                            src={countryCodeToSvg[icon_name]}
+                        />
                     ) : (
-                        <span>{icon_name}</span>
+                        <FontAwesomeIcon icon={local ? faServer : faGlobe} fixedWidth />
                     )}
                 </div>
                 <div className={'flex flex-col justify-center overflow-hidden w-full'}>

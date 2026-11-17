@@ -10,8 +10,6 @@ use Illuminate\View\Factory as ViewFactory;
 use Pterodactyl\Http\Controllers\Controller;
 use Pterodactyl\Contracts\Repository\SettingsRepositoryInterface;
 use Pterodactyl\Http\Requests\Admin\Settings\PterodactylRegionSettingsFormRequest;
-use GuzzleHttp\Client;
-use Illuminate\Support\Arr;
 
 class PterodactylRegionController extends Controller
 {
@@ -22,8 +20,7 @@ class PterodactylRegionController extends Controller
         private AlertsMessageBag $alert,
         private SettingsRepositoryInterface $settings,
         private Kernel $kernel,
-        private ViewFactory $view,
-        private Client $client
+        private ViewFactory $view
     ) {
     }
 
@@ -32,17 +29,9 @@ class PterodactylRegionController extends Controller
      */
     public function index(): View
     {
-        $json_data = [];
-        
-        $response = $this->client->request('GET', 'https://exeyarikus.info/pterodactyl-region/info.json');
-        if ($response->getStatusCode() === 200) {
-            $json_data = json_decode($response->getBody(), true);
-        }
-        
         return $this->view->make('admin.settings.pterodactyl-region', [
-            'version' => Arr::get($json_data, 'version') ?? '2.1',
-            'my_version' => '2.1',
-            'discord' => Arr::get($json_data, 'discord') ?? 'https://dsc.gg/mrlg',
+            'version' => '3.0.0',
+            'dns_api' => $this->settings->get('settings::region-api:dns', 'DNS-Cloudflare'),
         ]);
     }
 
@@ -56,7 +45,7 @@ class PterodactylRegionController extends Controller
             $this->settings->set('settings::' . $key, $value);
         }
 
-        $this->kernel->call('queue:restart');
+        $this->kernel->call('view:clear');
         $this->alert->success('Pterodactyl Region settings have been successfully updated.')->flash();
 
         return redirect()->route('admin.settings.pterodactyl-region');

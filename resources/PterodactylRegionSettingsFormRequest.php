@@ -12,8 +12,8 @@ class PterodactylRegionSettingsFormRequest extends AdminFormRequest
     public function rules(): array
     {
         return [
-            'region-api:ip' => 'required|string|max:30',
-            'region-api:dns' => 'required|string|max:30',
+            'region-api:ip' => 'required|string|in:ipinfo.spacehost.ovh',
+            'region-api:dns' => 'required|string|in:DNS-Google,DNS-Cloudflare,DNS-OpenDNS,DNS-Quad9',
         ];
     }
 
