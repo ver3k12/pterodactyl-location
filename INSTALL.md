@@ -25,7 +25,7 @@ sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
 
 Replace `/var/www/pterodactyl` with the panel's absolute path. Blueprint must be available as `$PANEL_DIR/blueprint` or in `PATH`. Alternatively, clone or download this repository and run `sudo bash main.sh /absolute/path/to/pterodactyl`. The script downloads the latest source from the `main` branch when it is not run from a local checkout.
 
-The extension adds a separate Region statistic through Blueprint. The installer does not replace `ServerDetailsBlock.tsx`; it only adds the missing Blueprint hook when needed, with a backup under `storage/app/pterodactyl-location-backups/`. It does not copy the addon's test manifest, lock file or vendor directory into the panel.
+The extension adds a separate Region statistic through Blueprint, with country flags served from its own public asset directory. The installer does not replace `ServerDetailsBlock.tsx`; it only adds the missing Blueprint hook when needed, with a backup under `storage/app/pterodactyl-location-backups/`. It does not copy the addon's test manifest, lock file or vendor directory into the panel.
 
 For updates to an existing installation, follow [update.md](update.md). Do not manually remove the extension; the installer handles replacement and backup.
 

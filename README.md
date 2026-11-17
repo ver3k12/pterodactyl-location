@@ -1,6 +1,6 @@
 [English](README.md) | [Русский](README_RU.md) | [Nederlands](README_NL.md)
 
-# Pterodactyl Location 3.0.3
+# Pterodactyl Location 3.0.4
 
 Server location statistics for Pterodactyl Panel. Based on Pterodactyl Region by the original authors credited in [LICENSE](LICENSE).
 
@@ -27,7 +27,7 @@ PHP cURL with HTTP/2 support and mbstring are required. The panel must have outb
 
 ## Installation
 
-The installer packages this addon as a Blueprint extension, registers its API and dashboard component, restores the console hook if a panel update removed it, and rebuilds the frontend. If the extension is already installed, it backs up and removes the old Blueprint files before installing the new package; panel DNS settings are preserved. Download and review the script before running it; replace the panel path if needed:
+The installer packages this addon as a Blueprint extension, registers its API and dashboard component, restores the console hook if a panel update removed it, bundles country flags in the extension's public directory, and rebuilds the frontend. If the extension is already installed, it backs up and removes the old Blueprint files before installing the new package; panel DNS settings are preserved. Download and review the script before running it; replace the panel path if needed:
 
 ```bash
 curl -fsSLo /tmp/pterodactyl-location-main.sh https://raw.githubusercontent.com/ver3k12/pterodactyl-location/main/main.sh

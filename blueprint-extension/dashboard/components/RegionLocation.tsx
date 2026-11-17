@@ -17,6 +17,9 @@ export default () => {
     const hasAllocation = ServerContext.useStoreState((state) =>
         state.server.data!.allocations.some((allocation) => allocation.isDefault)
     );
+    const flagUrl = location?.country_code
+        ? `/extensions/pterodactyllocation/regions/${location.country_code}.svg`
+        : null;
 
     useEffect(() => {
         let active = true;
@@ -48,8 +51,11 @@ export default () => {
 
     return (
         <StatBlock icon={location?.status === 'local' ? faServer : faGlobe} title={'Region'}>
-            {!hasAllocation ? 'No allocation' : location ? location.country_name : 'Loading...'}
-            {location?.city && <span className={'ml-1 text-gray-300 text-[70%] select-none'}>, {location.city}</span>}
+            <span className={'inline-flex min-w-0 items-center'}>
+                {flagUrl && <img src={flagUrl} alt={''} className={'mr-1 h-4 w-6 flex-shrink-0 rounded-sm object-cover'} />}
+                <span>{!hasAllocation ? 'No allocation' : location ? location.country_name : 'Loading...'}</span>
+                {location?.city && <span className={'ml-1 text-gray-300 text-[70%] select-none'}>, {location.city}</span>}
+            </span>
         </StatBlock>
     );
 };

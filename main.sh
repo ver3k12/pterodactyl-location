@@ -71,7 +71,8 @@ for source_file in \
     blueprint-extension/dashboard/components/RegionLocation.tsx \
     blueprint-extension/routes/client.php \
     resources/RegionLookupService.php \
-    resources/ServerRegionController.php; do
+    resources/ServerRegionController.php \
+    resources/regions/PL.svg; do
     if [[ ! -f "$ADDON_DIR/$source_file" ]]; then
         printf 'Error: extension source file is missing: %s\n' "$source_file" >&2
         exit 1
@@ -79,8 +80,9 @@ for source_file in \
 done
 
 PACKAGE_DIR="$WORK_DIR/package"
-mkdir -p "$PACKAGE_DIR/app" "$PACKAGE_DIR/dashboard/components" "$PACKAGE_DIR/routes"
+mkdir -p "$PACKAGE_DIR/app" "$PACKAGE_DIR/dashboard/components" "$PACKAGE_DIR/routes" "$PACKAGE_DIR/public/regions"
 cp -R "$ADDON_DIR/blueprint-extension/." "$PACKAGE_DIR/"
+cp "$ADDON_DIR"/resources/regions/*.svg "$PACKAGE_DIR/public/regions/"
 
 sed 's|^namespace Pterodactyl\\Services\\Region;$|namespace Pterodactyl\\BlueprintFramework\\Extensions\\pterodactyllocation;|' \
     "$ADDON_DIR/resources/RegionLookupService.php" > "$PACKAGE_DIR/app/RegionLookupService.php"

@@ -2,7 +2,7 @@ info:
   name: 'Pterodactyl Location'
   identifier: 'pterodactyllocation'
   description: 'Shows the approximate region of a server primary allocation.'
-  version: '3.0.3'
+  version: '3.0.4'
   target: 'beta-2026-08'
   author: 'exeyarikus, SlurioShop; Blueprint integration edits: merv1k'
 
@@ -17,3 +17,6 @@ requests:
   app: 'app'
   routers:
     client: 'routes/client.php'
+
+data:
+  public: 'public'
