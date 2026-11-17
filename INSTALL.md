@@ -12,27 +12,19 @@ Target: Pterodactyl Panel 1.15.2. Review [LICENSE](LICENSE) and obtain the neces
 
 The free API V2 quota is currently 1000 requests per day. No token is required for the free tier. This integration does not expose a paid API token field.
 
-## 2. Copy the Addon Files
+## 2. Install the Addon Files
 
-Set `ADDON` to this repository's actual absolute path. Run these commands from the panel directory, not the addon directory:
+The installer copies the addon files into the panel and backs up any files it replaces under `storage/app/pterodactyl-location-backups/`. Review [main.sh](main.sh) before running it. From a trusted shell on the panel server, run:
 
 ```bash
-cd /var/www/pterodactyl
-ADDON=/absolute/path/to/pterodactyl-location
-
-install -d app/Services/Region
-install -m 0644 "$ADDON/resources/RegionLookupService.php" app/Services/Region/RegionLookupService.php
-install -m 0644 "$ADDON/resources/ServerRegionController.php" app/Http/Controllers/Api/Client/Servers/ServerRegionController.php
-install -m 0644 "$ADDON/resources/PterodactylRegionController.php" app/Http/Controllers/Admin/Settings/PterodactylRegionController.php
-install -m 0644 "$ADDON/resources/PterodactylRegionSettingsFormRequest.php" app/Http/Requests/Admin/Settings/PterodactylRegionSettingsFormRequest.php
-install -m 0644 "$ADDON/resources/pterodactyl-region.blade.php" resources/views/admin/settings/pterodactyl-region.blade.php
-install -m 0644 "$ADDON/resources/ServerDetailsBlock.tsx" resources/scripts/components/server/console/ServerDetailsBlock.tsx
-install -m 0644 "$ADDON/resources/RegionStatBlock.tsx" resources/scripts/components/server/console/RegionStatBlock.tsx
-install -d resources/scripts/assets/regions
-cp "$ADDON"/resources/regions/*.svg resources/scripts/assets/regions/
+curl -fsSLo /tmp/pterodactyl-location-main.sh https://raw.githubusercontent.com/ver3k12/pterodactyl-location/main/main.sh
+less /tmp/pterodactyl-location-main.sh
+sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
 ```
 
-If the console components have custom modifications, merge the addon changes rather than overwriting them. The original panel's `style.module.css` is reused. Do not copy the addon test manifest, lock file or vendor directory into the panel.
+Replace `/var/www/pterodactyl` with the panel's absolute path. Alternatively, clone or download this repository and run `sudo bash main.sh /absolute/path/to/pterodactyl`. The script downloads the latest source from the `main` branch when it is not run from a local checkout.
+
+The script does not change route files, run Composer or Yarn, or copy the addon's test manifest, lock file or vendor directory. If `ServerDetailsBlock.tsx` has custom modifications, merge them from the backup before building. The original panel's `style.module.css` is reused.
 
 ## 3. Register the Client Route
 

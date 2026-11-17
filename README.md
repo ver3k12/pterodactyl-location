@@ -27,7 +27,15 @@ PHP cURL with HTTP/2 support and mbstring are required. The panel must have outb
 
 ## Installation
 
-Follow [INSTALL.md](INSTALL.md). Back up your panel and database first, and merge component changes if you use a custom theme. Do not run the old remote installer; it installs a different version.
+For a quick file install on the panel server, download and review the installer, then run it. Replace the panel path if needed:
+
+```bash
+curl -fsSLo /tmp/pterodactyl-location-main.sh https://raw.githubusercontent.com/ver3k12/pterodactyl-location/main/main.sh
+less /tmp/pterodactyl-location-main.sh
+sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
+```
+
+The installer backs up files it replaces and copies the addon files. It does not edit panel routes, so finish the route registration and frontend build in [INSTALL.md](INSTALL.md). Review the script before running it, back up your panel and database, and merge component changes if you use a custom theme. Do not run the old remote installer; it installs a different version.
 
 Existing `DNS-Google` and `DNS-Cloudflare` settings continue to work. Old IP provider selections are ignored; API V2 is always used. Open the admin settings page and save once to update the stored provider name.
 
