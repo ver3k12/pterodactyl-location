@@ -106,6 +106,15 @@ class RegionLookupService
         }
     }
 
+    public static function selectLookupAddress(string $address, ?string $alias): string
+    {
+        if (self::isLocalAddress($address) && is_string($alias) && trim($alias) !== '') {
+            return trim($alias);
+        }
+
+        return $address;
+    }
+
     private static function result(string $status, string $label): array
     {
         return ['status' => $status, 'country_name' => $label, 'country_code' => '', 'city' => null];

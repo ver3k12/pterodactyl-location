@@ -30,7 +30,7 @@ else
     exit 1
 fi
 
-for command_name in curl tar zip sed; do
+for command_name in curl tar zip sed grep perl; do
     if ! command -v "$command_name" >/dev/null 2>&1; then
         printf 'Error: required command not found: %s\n' "$command_name" >&2
         exit 1
@@ -101,6 +101,66 @@ if [[ ! -s "$PACKAGE_FILE" ]]; then
 fi
 
 BACKUP_DIR="$PANEL_DIR/storage/app/pterodactyl-location-backups/$(date +%Y%m%d-%H%M%S)"
+
+ensure_console_hook_base() {
+    local console_file="$PANEL_DIR/resources/scripts/components/server/console/ServerDetailsBlock.tsx"
+    local hook_file="$PANEL_DIR/resources/scripts/blueprint/components/Server/Terminal/AfterInformation.tsx"
+
+    if [[ ! -f "$console_file" ]]; then
+        printf 'Error: expected console component not found: %s\n' "$console_file" >&2
+        return 1
+    fi
+
+    if ! grep -Fq "import AfterInformation from '@blueprint/components/Server/Terminal/AfterInformation';" "$console_file" \
+        || ! grep -Fq '<AfterInformation />' "$console_file"; then
+        if ! grep -Fq "import { capitalize } from '@/lib/strings';" "$console_file" \
+            || ! grep -Fq "title={'Network (Outbound)'}" "$console_file"; then
+            printf 'Error: this panel console file does not match Pterodactyl 1.15.1; leaving it unchanged.\n' >&2
+            return 1
+        fi
+
+        local console_backup="$BACKUP_DIR/resources/scripts/components/server/console/ServerDetailsBlock.tsx"
+        mkdir -p "$(dirname "$console_backup")"
+        cp -a "$console_file" "$console_backup"
+
+        if ! grep -Fq "import AfterInformation from '@blueprint/components/Server/Terminal/AfterInformation';" "$console_file"; then
+            perl -0pi -e 's|import \{ capitalize \} from \x27\@/lib/strings\x27;|$&\nimport AfterInformation from \x27\@blueprint/components/Server/Terminal/AfterInformation\x27;|' "$console_file"
+        fi
+        if ! grep -Fq '<AfterInformation />' "$console_file"; then
+            perl -0pi -e 's|(<StatBlock icon=\{faCloudUploadAlt\} title=\{\x27Network \(Outbound\)\x27\}>.*?</StatBlock>)(\s*</div>)|$1\n            <AfterInformation />\n$2|s' "$console_file"
+        fi
+
+        if ! grep -Fq "import AfterInformation from '@blueprint/components/Server/Terminal/AfterInformation';" "$console_file" \
+            || ! grep -Fq '<AfterInformation />' "$console_file"; then
+            cp -a "$console_backup" "$console_file"
+            printf 'Error: could not safely add the Blueprint console hook; the original file was restored.\n' >&2
+            return 1
+        fi
+        printf 'Added missing Blueprint console hook; original file backed up to: %s\n' "$console_backup"
+    fi
+
+    if [[ ! -f "$hook_file" ]]; then
+        mkdir -p "$(dirname "$hook_file")"
+        printf '%s\n' \
+            "import React from 'react';" \
+            '' \
+            '/* blueprint/import */' \
+            '' \
+            'export default () => (' \
+            '    <>' \
+            '        {/* blueprint/react */}' \
+            '    </>' \
+            ');' > "$hook_file"
+    fi
+
+    if ! grep -Fq '/* blueprint/import */' "$hook_file" || ! grep -Fq '{/* blueprint/react */}' "$hook_file"; then
+        printf 'Error: Blueprint console hook template is missing its component markers: %s\n' "$hook_file" >&2
+        return 1
+    fi
+}
+
+ensure_console_hook_base
+
 if [[ -e "$PANEL_DIR/$EXTENSION_ID.blueprint" ]]; then
     mkdir -p "$BACKUP_DIR"
     cp -a "$PANEL_DIR/$EXTENSION_ID.blueprint" "$BACKUP_DIR/"
@@ -131,6 +191,29 @@ printf 'Installing Blueprint extension and rebuilding the panel frontend...\n'
     cd "$PANEL_DIR"
     "$BLUEPRINT_COMMAND" -install "$EXTENSION_ID"
 )
+
+HOOK_FILE="$PANEL_DIR/resources/scripts/blueprint/components/Server/Terminal/AfterInformation.tsx"
+COMPONENT_IMPORT="import PterodactyllocationComponent from '@blueprint/extensions/pterodactyllocation/RegionLocation';"
+if ! grep -Fq "$COMPONENT_IMPORT" "$HOOK_FILE" || ! grep -Fq '<PterodactyllocationComponent />' "$HOOK_FILE"; then
+    printf 'Blueprint did not inject the declared component; applying the extension slot and rebuilding once...\n'
+    mkdir -p "$BACKUP_DIR"
+    cp -a "$HOOK_FILE" "$BACKUP_DIR/AfterInformation.tsx"
+    if ! grep -Fq "$COMPONENT_IMPORT" "$HOOK_FILE"; then
+        perl -0pi -e 's~/\* blueprint/import \*/~/* blueprint/import */\nimport PterodactyllocationComponent from \x27\@blueprint/extensions/pterodactyllocation/RegionLocation\x27;~' "$HOOK_FILE"
+    fi
+    if ! grep -Fq '<PterodactyllocationComponent />' "$HOOK_FILE"; then
+        perl -0pi -e 's~\{\s*/\*\s*blueprint/react\s*\*/\s*\}~{/* blueprint/react */}\n        <PterodactyllocationComponent />~' "$HOOK_FILE"
+    fi
+    if ! grep -Fq "$COMPONENT_IMPORT" "$HOOK_FILE" || ! grep -Fq '<PterodactyllocationComponent />' "$HOOK_FILE"; then
+        printf 'Error: could not inject the Region component into the Blueprint slot.\n' >&2
+        exit 1
+    fi
+    (
+        cd "$PANEL_DIR"
+        yarn run build:production --progress
+        php artisan optimize:clear
+    )
+fi
 
 printf '\nPterodactyl Location was installed through Blueprint.\n'
 printf 'Open Admin Panel > Extensions > Pterodactyl Location to configure the DNS resolver.\n'

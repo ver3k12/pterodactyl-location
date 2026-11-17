@@ -22,7 +22,7 @@ class ServerRegionController extends Controller
         }
 
         return new JsonResponse($this->lookup->lookup(
-            $allocation->ip,
+            RegionLookupService::selectLookupAddress($allocation->ip, $allocation->ip_alias),
             $this->settings->get('settings::region-api:dns', 'DNS-Cloudflare')
         ));
     }

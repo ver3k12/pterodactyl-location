@@ -1,6 +1,6 @@
 # Updating Pterodactyl Location
 
-This procedure updates an existing Blueprint installation. The current package version is 3.0.2. The installer keeps the extension identifier (`pterodactyllocation`), backs up and removes the old Blueprint-managed files, then installs the latest package. DNS settings are stored by the panel and are preserved.
+This procedure updates an existing Blueprint installation. The current package version is 3.0.3. The installer keeps the extension identifier (`pterodactyllocation`), backs up and removes the old Blueprint-managed files, then installs the latest package. DNS settings are stored by the panel and are preserved.
 
 ## 1. Back Up the Panel
 
@@ -16,7 +16,7 @@ less /tmp/pterodactyl-location-main.sh
 sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
 ```
 
-Replace `/var/www/pterodactyl` with the panel's absolute path. The installer backs up and removes the old Blueprint extension, then installs the latest package with the same identifier. Blueprint rebuilds the frontend and clears its application caches. The DNS resolver is stored in the panel's settings table and is not removed with the Blueprint extension. This clean reinstall should leave one extension entry. Version 3.0.2 also fixes the admin settings view, which now uses Blueprint's extension content instead of a nested panel layout.
+Replace `/var/www/pterodactyl` with the panel's absolute path. The installer backs up and removes the old Blueprint extension, then installs the latest package with the same identifier. If the console hook is missing, it backs up `ServerDetailsBlock.tsx` and restores the Blueprint hook before rebuilding. If Blueprint does not inject the Region component from `Components.yml`, the installer adds it to the hook and rebuilds once. The DNS resolver is stored in the panel's settings table and is not removed with the Blueprint extension. This clean reinstall should leave one extension entry. Version 3.0.3 also geolocates a configured public alias when the primary allocation is private.
 
 Do not run `blueprint -remove pterodactyllocation` before updating. Removing it first is unnecessary and may discard extension-managed files.
 

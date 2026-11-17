@@ -36,6 +36,18 @@ foreach (['0.0.0.0', '127.0.0.1', '192.168.1.1', '::', '::1', '[::1]', '::ffff:1
     $check($result['status'] === 'local' && $result['country_name'] === 'LocalHost', 'LocalHost result: ' . $address);
 }
 $check($history === [], 'Local addresses must never cause network requests.');
+$check(
+    RegionLookupService::selectLookupAddress('10.0.0.5', '145.79.141.196') === '145.79.141.196',
+    'A public allocation alias should be used when the primary IP is private.'
+);
+$check(
+    RegionLookupService::selectLookupAddress('1.1.1.1', '145.79.141.196') === '1.1.1.1',
+    'A public primary IP should take precedence over its display alias.'
+);
+$check(
+    RegionLookupService::selectLookupAddress('10.0.0.5', null) === '10.0.0.5',
+    'A private allocation without an alias should remain unchanged.'
+);
 foreach (['', 'not an address', 'https://example.com', '1.1.1.1/path', '999.999.999.999:80'] as $invalid) {
     $check($service->lookup($invalid)['status'] === 'invalid', 'Invalid input: ' . $invalid);
 }

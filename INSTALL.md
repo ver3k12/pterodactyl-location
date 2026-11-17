@@ -15,7 +15,7 @@ The free API V2 quota is currently 1000 requests per day. No token is required f
 
 ## 2. Automated Blueprint Installation
 
-The script creates a temporary `.blueprint` package and installs it using the panel's Blueprint CLI. If this extension is already installed, the script backs up its Blueprint state, removes that version, and installs the new package using the same identifier. Blueprint registers the admin page, authenticated client API route and dashboard component, then rebuilds the frontend. The DNS resolver is stored in the panel settings and is preserved. Review [main.sh](main.sh) before running it. From a trusted shell on the panel server, run:
+The script creates a temporary `.blueprint` package and installs it using the panel's Blueprint CLI. If this extension is already installed, the script backs up its Blueprint state, removes that version, and installs the new package using the same identifier. It checks that the console has Blueprint's `AfterInformation` hook; if missing, it backs up `ServerDetailsBlock.tsx` and adds only the hook import and render slot. Blueprint registers the admin page, authenticated client API route and dashboard component, then rebuilds the frontend. The DNS resolver is stored in the panel settings and is preserved. Review [main.sh](main.sh) before running it. From a trusted shell on the panel server, run:
 
 ```bash
 curl -fsSLo /tmp/pterodactyl-location-main.sh https://raw.githubusercontent.com/ver3k12/pterodactyl-location/main/main.sh
@@ -25,7 +25,7 @@ sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
 
 Replace `/var/www/pterodactyl` with the panel's absolute path. Blueprint must be available as `$PANEL_DIR/blueprint` or in `PATH`. Alternatively, clone or download this repository and run `sudo bash main.sh /absolute/path/to/pterodactyl`. The script downloads the latest source from the `main` branch when it is not run from a local checkout.
 
-The extension adds a separate Region statistic through Blueprint and does not replace the panel's `ServerDetailsBlock.tsx`. It does not copy the addon's test manifest, lock file or vendor directory into the panel. Blueprint handles extension installation and frontend rebuilding.
+The extension adds a separate Region statistic through Blueprint. The installer does not replace `ServerDetailsBlock.tsx`; it only adds the missing Blueprint hook when needed, with a backup under `storage/app/pterodactyl-location-backups/`. It does not copy the addon's test manifest, lock file or vendor directory into the panel.
 
 For updates to an existing installation, follow [update.md](update.md). Do not manually remove the extension; the installer handles replacement and backup.
 
@@ -46,7 +46,7 @@ The installer handles extension registration and the frontend rebuild. The defau
 - Switching between servers while a lookup is pending: no stale region from the previous server.
 - An unauthenticated user or a user without access to the server cannot access its region endpoint.
 
-DNS is used only when the primary allocation contains a hostname. Normal numeric IP allocations do not need DNS. Display aliases are deliberately not resolved because they can point to proxies or a different machine.
+DNS is used for hostname allocations and for a configured alias when the primary allocation is private/local. A public primary IP takes precedence over its alias. The panel hostname and browser address are never used. For a private primary address with a public alias, the location describes the alias; without an alias, it displays LocalHost.
 
 ## Troubleshooting
 
@@ -55,5 +55,5 @@ DNS is used only when the primary allocation contains a hostname. Normal numeric
 - **Quad9 unavailable:** verify PHP cURL supports HTTP/2 and outbound HTTPS to `dns.quad9.net`. All DoH requests explicitly use HTTP/2.
 - **No country flag:** the Blueprint component uses a globe icon and does not install assets into the panel's shared asset directory.
 - **An error persists briefly:** failed lookups are cached for 60 seconds. Successful IP lookups are cached for 24 hours; hostname results for 5 minutes.
-- **A private node shows LocalHost:** expected. The panel's public hostname is never substituted for the allocation.
+- **A private node shows LocalHost:** expected when it has no IP alias. If an alias is configured, the addon uses that alias for geolocation while keeping the primary allocation private.
 - **Settings from an older installation:** Google and Cloudflare names remain supported. Unsupported resolver values safely use Cloudflare. Save settings to migrate the old IP provider value to API V2.
