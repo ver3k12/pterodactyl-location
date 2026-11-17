@@ -1,6 +1,6 @@
 [English](README.md) | [Русский](README_RU.md) | [Nederlands](README_NL.md)
 
-# Pterodactyl Location 3.0.4
+# Pterodactyl Location 3.0.5
 
 Server location statistics for Pterodactyl Panel. Based on Pterodactyl Region by the original authors credited in [LICENSE](LICENSE).
 
@@ -17,7 +17,7 @@ PHP cURL with HTTP/2 support and mbstring are required. The panel must have outb
 - Successful IP lookups are cached for 24 hours; hostname results for 5 minutes; errors for 1 minute. A 429 response puts API calls on a shared cooldown.
 - DNS-over-HTTPS supports Google, Cloudflare (default), OpenDNS and Quad9, including IPv6-only hostnames. HTTP/2 is required by Quad9.
 - Local, private, unspecified, link-local, CGNAT, multicast and reserved addresses display **LocalHost**, without contacting the geolocation API. This includes `0.0.0.0`, `127.0.0.1`, `::`, `::1`, IPv4-mapped IPv6, `localhost` and `.local` names.
-- The lookup uses the primary allocation when it is public. If the primary IP is private/local and an IP alias is configured, the alias is used; without an alias it displays **LocalHost**. The panel hostname and browser address are never used.
+- The lookup uses the primary allocation when it is public. For private/local allocations it uses a configured public alias, or falls back to the node's SFTP hostname; the label identifies this as node location. If neither is usable it displays **LocalHost**. The panel hostname and browser address are never used.
 - Missing city names no longer produce an infinity symbol. Countries without a bundled flag use a globe icon.
 - Timeouts, malformed DNS responses, missing records, API errors and rate limits produce a stable unavailable state. Failed DNS never falls back to auto-detecting an unrelated IP.
 - Switching servers cannot apply stale responses to the new server. No IP addresses or lookup URLs are logged in the browser.

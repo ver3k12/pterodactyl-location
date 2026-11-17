@@ -9,6 +9,8 @@ interface LocationData {
     city: string | null;
     country_name: string;
     country_code: string;
+    local_ip?: boolean;
+    location_source?: 'allocation' | 'alias' | 'sftp_node';
 }
 
 export default () => {
@@ -55,6 +57,15 @@ export default () => {
                 {flagUrl && <img src={flagUrl} alt={''} className={'mr-1 h-4 w-6 flex-shrink-0 rounded-sm object-cover'} />}
                 <span>{!hasAllocation ? 'No allocation' : location ? location.country_name : 'Loading...'}</span>
                 {location?.city && <span className={'ml-1 text-gray-300 text-[70%] select-none'}>, {location.city}</span>}
+                {location?.local_ip && (
+                    <span className={'ml-1 text-gray-300 text-[70%] select-none'}>
+                        {location.location_source === 'sftp_node'
+                            ? ' · private IP, SFTP node location'
+                            : location.location_source === 'alias'
+                              ? ' · private IP, public alias'
+                              : ' · private IP'}
+                    </span>
+                )}
             </span>
         </StatBlock>
     );

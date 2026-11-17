@@ -1,6 +1,6 @@
 # Updating Pterodactyl Location
 
-This procedure updates an existing Blueprint installation. The current package version is 3.0.4. The installer keeps the extension identifier (`pterodactyllocation`), backs up and removes the old Blueprint-managed files, then installs the latest package. DNS settings are stored by the panel and are preserved.
+This procedure updates an existing Blueprint installation. The current package version is 3.0.5. The installer keeps the extension identifier (`pterodactyllocation`), backs up and removes the old Blueprint-managed files, then installs the latest package. DNS settings are stored by the panel and are preserved.
 
 ## 1. Back Up the Panel
 
@@ -16,7 +16,7 @@ less /tmp/pterodactyl-location-main.sh
 sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
 ```
 
-Replace `/var/www/pterodactyl` with the panel's absolute path. The installer backs up and removes the old Blueprint extension, then installs the latest package with the same identifier. If the console hook is missing, it backs up `ServerDetailsBlock.tsx` and restores the Blueprint hook before rebuilding. If Blueprint does not inject the Region component from `Components.yml`, the installer adds it to the hook and rebuilds once. The DNS resolver is stored in the panel's settings table and is not removed with the Blueprint extension. This clean reinstall should leave one extension entry. Version 3.0.3 added public alias fallback for private allocations; version 3.0.4 adds country flags served from the extension.
+Replace `/var/www/pterodactyl` with the panel's absolute path. The installer backs up and removes the old Blueprint extension, then installs the latest package with the same identifier. If the console hook is missing, it backs up `ServerDetailsBlock.tsx` and restores the Blueprint hook before rebuilding. If Blueprint does not inject the Region component from `Components.yml`, the installer adds it to the hook and rebuilds once. The DNS resolver is stored in the panel's settings table and is not removed with the Blueprint extension. This clean reinstall should leave one extension entry. Version 3.0.3 added public alias fallback, 3.0.4 added country flags, and 3.0.5 adds an SFTP-node location fallback for private allocations without a usable alias.
 
 Do not run `blueprint -remove pterodactyllocation` before updating. Removing it first is unnecessary and may discard extension-managed files.
 

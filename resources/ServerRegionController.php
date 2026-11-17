@@ -21,9 +21,23 @@ class ServerRegionController extends Controller
             return new JsonResponse(['status' => 'unavailable', 'country_name' => 'No allocation', 'country_code' => '', 'city' => null]);
         }
 
-        return new JsonResponse($this->lookup->lookup(
-            RegionLookupService::selectLookupAddress($allocation->ip, $allocation->ip_alias),
-            $this->settings->get('settings::region-api:dns', 'DNS-Cloudflare')
-        ));
+        $resolver = $this->settings->get('settings::region-api:dns', 'DNS-Cloudflare');
+        $address = RegionLookupService::selectLookupAddress($allocation->ip, $allocation->ip_alias);
+        $localIp = RegionLookupService::isLocalAddress($allocation->ip);
+        $result = $this->lookup->lookup($address, $resolver);
+        $result['local_ip'] = $localIp;
+        $result['location_source'] = $address !== $allocation->ip ? 'alias' : 'allocation';
+
+        if ($localIp && $result['status'] === 'local' && !empty($server->node->fqdn)) {
+            $nodeResult = $this->lookup->lookup($server->node->fqdn, $resolver);
+            if ($nodeResult['status'] === 'success') {
+                $nodeResult['local_ip'] = true;
+                $nodeResult['location_source'] = 'sftp_node';
+
+                return new JsonResponse($nodeResult);
+            }
+        }
+
+        return new JsonResponse($result);
     }
 }
