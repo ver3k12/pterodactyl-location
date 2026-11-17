@@ -35,7 +35,7 @@ less /tmp/pterodactyl-location-main.sh
 sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
 ```
 
-Back up the panel and database first. This requires Blueprint to be installed in the panel. See [INSTALL.md](INSTALL.md) for requirements and verification. Do not run the old remote installer; it installs a different version.
+Back up the panel and database first. This requires Blueprint to be installed in the panel. See [INSTALL.md](INSTALL.md) for requirements and verification, and [update.md](update.md) to update an existing installation. Blueprint integration and installer edits are credited to `merv1k`; original authors remain credited in [LICENSE](LICENSE). Do not run the old remote installer; it installs a different version.
 
 Existing `DNS-Google` and `DNS-Cloudflare` settings continue to work. Old IP provider selections are ignored; API V2 is always used. Open the admin settings page and save once to update the stored provider name.
 

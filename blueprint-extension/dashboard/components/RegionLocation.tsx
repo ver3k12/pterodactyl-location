@@ -47,11 +47,9 @@ export default () => {
     }, [uuid, hasAllocation]);
 
     return (
-        <div className={'mt-2 grid grid-cols-6 gap-2 md:gap-4'}>
-            <StatBlock icon={location?.status === 'local' ? faServer : faGlobe} title={'Region'}>
-                {!hasAllocation ? 'No allocation' : location ? location.country_name : 'Loading...'}
-                {location?.city && <span className={'ml-1 text-gray-300 text-[70%] select-none'}>, {location.city}</span>}
-            </StatBlock>
-        </div>
+        <StatBlock icon={location?.status === 'local' ? faServer : faGlobe} title={'Region'}>
+            {!hasAllocation ? 'No allocation' : location ? location.country_name : 'Loading...'}
+            {location?.city && <span className={'ml-1 text-gray-300 text-[70%] select-none'}>, {location.city}</span>}
+        </StatBlock>
     );
 };

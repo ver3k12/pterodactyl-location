@@ -27,6 +27,8 @@ Replace `/var/www/pterodactyl` with the panel's absolute path. Blueprint must be
 
 The extension adds a separate Region statistic through Blueprint and does not replace the panel's `ServerDetailsBlock.tsx`. It does not copy the addon's test manifest, lock file or vendor directory into the panel. Blueprint handles extension installation and frontend rebuilding.
 
+For updates to an existing installation, follow [update.md](update.md). Do not remove the Blueprint extension before updating.
+
 ## 3. Verify
 
 After the script completes, from the panel directory:
