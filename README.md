@@ -6,7 +6,7 @@ Server location statistics for Pterodactyl Panel. Based on Pterodactyl Region by
 
 ## Compatibility
 
-Integration target: Pterodactyl Panel **1.15.2**, PHP **8.2+**, Node.js **22+** and Yarn Classic. Existing React, TypeScript, Font Awesome and Laravel dependencies come from the panel; this addon does not replace them with incompatible major versions.
+Integration target: Pterodactyl Panel **1.15.2**, Blueprint **beta-2026-08**, PHP **8.2+**, Node.js **22+** and Yarn Classic. Existing React, TypeScript, Font Awesome and Laravel dependencies come from the panel; this addon does not replace them with incompatible major versions.
 
 PHP cURL with HTTP/2 support and mbstring are required. The panel must have outbound HTTPS access. This is a panel addon, not a standalone application.
 
@@ -27,7 +27,7 @@ PHP cURL with HTTP/2 support and mbstring are required. The panel must have outb
 
 ## Installation
 
-For a quick file install on the panel server, download and review the installer, then run it. Replace the panel path if needed:
+The installer packages this addon as a Blueprint extension, registers its API and dashboard component through Blueprint, and lets Blueprint rebuild the frontend. Download and review the script before running it; replace the panel path if needed:
 
 ```bash
 curl -fsSLo /tmp/pterodactyl-location-main.sh https://raw.githubusercontent.com/ver3k12/pterodactyl-location/main/main.sh
@@ -35,7 +35,7 @@ less /tmp/pterodactyl-location-main.sh
 sudo bash /tmp/pterodactyl-location-main.sh /var/www/pterodactyl
 ```
 
-The installer backs up files it replaces and copies the addon files. It does not edit panel routes, so finish the route registration and frontend build in [INSTALL.md](INSTALL.md). Review the script before running it, back up your panel and database, and merge component changes if you use a custom theme. Do not run the old remote installer; it installs a different version.
+Back up the panel and database first. This requires Blueprint to be installed in the panel. See [INSTALL.md](INSTALL.md) for requirements and verification. Do not run the old remote installer; it installs a different version.
 
 Existing `DNS-Google` and `DNS-Cloudflare` settings continue to work. Old IP provider selections are ignored; API V2 is always used. Open the admin settings page and save once to update the stored provider name.
 

@@ -1,0 +1,19 @@
+info:
+  name: 'Pterodactyl Location'
+  identifier: 'pterodactyllocation'
+  description: 'Shows the approximate region of a server primary allocation.'
+  version: '3.0.0'
+  target: 'beta-2026-08'
+  author: 'exeyarikus, SlurioShop'
+
+admin:
+  view: 'admin/view.blade.php'
+  controller: 'admin/controller.php'
+
+dashboard:
+  components: 'dashboard/components'
+
+requests:
+  app: 'app'
+  routers:
+    client: 'routes/client.php'
