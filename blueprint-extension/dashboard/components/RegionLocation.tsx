@@ -52,21 +52,23 @@ export default () => {
     }, [uuid, hasAllocation]);
 
     return (
-        <StatBlock icon={location?.status === 'local' ? faServer : faGlobe} title={'Region'}>
-            <span className={'inline-flex min-w-0 items-center'}>
-                {flagUrl && <img src={flagUrl} alt={''} className={'mr-1 h-4 w-6 flex-shrink-0 rounded-sm object-cover'} />}
-                <span>{!hasAllocation ? 'No allocation' : location ? location.country_name : 'Loading...'}</span>
-                {location?.city && <span className={'ml-1 text-gray-300 text-[70%] select-none'}>, {location.city}</span>}
-                {location?.local_ip && (
-                    <span className={'ml-1 text-gray-300 text-[70%] select-none'}>
-                        {location.location_source === 'sftp_node'
-                            ? ' · private IP, SFTP node location'
-                            : location.location_source === 'alias'
-                              ? ' · private IP, public alias'
-                              : ' · private IP'}
-                    </span>
-                )}
-            </span>
-        </StatBlock>
+        <div className={'col-span-6 min-w-0'}>
+            <StatBlock icon={location?.status === 'local' ? faServer : faGlobe} title={'Region'}>
+                <span className={'inline-flex min-w-0 items-center'}>
+                    {flagUrl && <img src={flagUrl} alt={''} className={'mr-1 h-4 w-6 flex-shrink-0 rounded-sm object-cover'} />}
+                    <span>{!hasAllocation ? 'No allocation' : location ? location.country_name : 'Loading...'}</span>
+                    {location?.city && <span className={'ml-1 text-gray-300 text-[70%] select-none'}>, {location.city}</span>}
+                </span>
+            </StatBlock>
+            {location?.local_ip && (
+                <p className={'mt-1 px-2 text-xs leading-tight text-gray-300'}>
+                    {location.location_source === 'sftp_node'
+                        ? 'Private allocation; approximate region from the node SFTP hostname.'
+                        : location.location_source === 'alias'
+                          ? 'Private allocation; region from its public alias.'
+                          : 'Private allocation; no public alias or SFTP location was available.'}
+                </p>
+            )}
+        </div>
     );
 };
